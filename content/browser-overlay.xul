@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<!DOCTYPE window>
+<overlay xmlns= "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script type="text/javascript"
+     src="chrome://mozilla-capi/content/browser-overlay.js">
+  </script>
+</overlay>

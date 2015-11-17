@@ -1,0 +1,3 @@
+content   mozilla-capi           content/
+
+overlay   chrome://browser/content/browser.xul  chrome://mozilla-capi/content/browser-overlay.xul
