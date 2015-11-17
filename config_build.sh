@@ -6,7 +6,7 @@ APP_NAME=mozilla-capi
 CHROME_PROVIDERS="content"
 CLEAN_UP=1
 ROOT_FILES="README COPYING"
-ROOT_DIRS="components"
+ROOT_DIRS="components defaults"
 BEFORE_BUILD=
 AFTER_BUILD=
 
