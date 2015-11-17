@@ -110,6 +110,51 @@ searchLibByLibraryName: function (name) {
     return libRemove;
 },
 
+//Finds a specifc library in the NSS configuration
+searchBultinLib: function () {
+	var moduleDB = Components.classes["@mozilla.org/security/pkcs11moduledb;1"].getService(Components.interfaces.nsIPKCS11ModuleDB);
+	var modules = moduleDB.listModules();  
+    var done = false;
+    var builtinLib = null;
+  
+    try {
+        modules.isDone();
+    } catch (e) { done = true; }
+    while (!done) {
+        var module = modules.currentItem().QueryInterface(Components.interfaces.nsIPKCS11Module);
+        if (module && module.path == null) {
+            builtinLib = module;
+            done = true;
+        }
+        try {
+            modules.next();
+        } catch (e) { done = true; }
+    }
+    return builtinLib;
+},
+
+searchSlotsFromBuiltinLibName: function() {
+    var slotList = this.searchBultinLib().listSlots();
+    
+    var done = false;
+    var slots = [];
+  
+    try {
+        slotList.isDone();
+    } catch (e) { done = true; }
+    while (!done) {
+        var slot = slotList.currentItem().QueryInterface(Components.interfaces.nsIPKCS11Slot);
+        if (slot && slot.tokenName != null) {
+            slots.push(slot.tokenName);
+        }
+        try {
+            slotList.next();
+        } catch (e) { done = true; }
+    }
+    
+    return slots;
+},
+
 findCorrectSharedLibrary: function () {
     var os = Components.classes["@mozilla.org/xre/app-info;1"]
                         .getService(Components.interfaces.nsIXULRuntime)
@@ -160,10 +205,10 @@ alterNSS: function () {
         this.logMsg("Failed to remove CKBI: "+e);
     }
     
-    //Remove all other certificates
+    //Remove all other (CA) certificates
     try {
         if(this.removeAllOtherCAs) {
-			var tokenNames = ["das Software-Sicherheitsmodul"];
+            var tokenNames = this.searchSlotsFromBuiltinLibName();
             var certDB = Cc["@mozilla.org/security/x509certdb;1"]
                                         .getService(Components.interfaces.nsIX509CertDB);
             var enumerator = certDB.getCerts().getEnumerator();
